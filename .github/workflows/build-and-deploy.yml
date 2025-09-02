@@ -1,0 +1,45 @@
+name: Serverless Build Test
+
+on:
+  push:
+    branches: [f1, f2, f3, dev, temp2]
+
+jobs:
+  build:
+    name: Build Part ${{ matrix.serverless }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        serverless: [part1, part2, part3]
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Show Matrix Info
+        run: |
+          echo "Running part: ${{ matrix.serverless }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "GitHub SHA: ${{ github.sha }}"
+
+      - name: Simulate Serverless Package
+        run: |
+          echo "📦 Packaging serverless-${{ matrix.serverless }}.yml"
+          sleep 5
+          echo "✅ Packaging complete for ${{ matrix.serverless }}"
+
+      - name: Simulate Deployment
+        if: matrix.serverless == 'part2' || matrix.serverless == 'part3'
+        run: |
+          echo "⏳ Waiting for previous parts..."
+          sleep 10
+          echo "🚀 Deploying ${{ matrix.serverless }}"
+
+      - name: Complete Message
+        run: |
+          echo "🎉 ${{ matrix.serverless }} processing completed!"

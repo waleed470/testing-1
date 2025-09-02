@@ -1,0 +1,35 @@
+name: Auto Merge Test
+
+on:
+  push:
+    branches: [temp2, dev]
+
+jobs:
+  merge_temp2_to_uat:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/temp2'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Simulate Merge
+        run: |
+          echo "🔄 Merging temp2 → uat"
+          echo "✅ Merge simulation completed!"
+
+  merge_dev_to_features:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    strategy:
+      matrix:
+        feature: [f1, f2, f3]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Simulate Back Merge
+        run: |
+          echo "🔄 Merging dev → ${{ matrix.feature }}"
+          echo "✅ Back merge simulation completed!"
