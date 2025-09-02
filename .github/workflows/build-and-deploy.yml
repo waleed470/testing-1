@@ -1,45 +1,150 @@
-name: Serverless Build Test
+name: Sequential Branch Processing
 
 on:
+  workflow_dispatch:  # Manual trigger
   push:
-    branches: [f1, f2, f3, dev, temp2]
+    branches: [trigger]  # Sirf trigger branch pe chalega
 
 jobs:
-  build:
-    name: Build Part ${{ matrix.serverless }}
+  # F1 Processing - Part 1, 2, 3 sequentially
+  process_f1_part1:
+    name: F1 - Part 1
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        serverless: [part1, part2, part3]
-    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Show Matrix Info
+      
+      - name: Process F1 Part 1
         run: |
-          echo "Running part: ${{ matrix.serverless }}"
-          echo "Branch: ${{ github.ref }}"
-          echo "GitHub SHA: ${{ github.sha }}"
-
-      - name: Simulate Serverless Package
-        run: |
-          echo "📦 Packaging serverless-${{ matrix.serverless }}.yml"
-          sleep 5
-          echo "✅ Packaging complete for ${{ matrix.serverless }}"
-
-      - name: Simulate Deployment
-        if: matrix.serverless == 'part2' || matrix.serverless == 'part3'
-        run: |
-          echo "⏳ Waiting for previous parts..."
+          echo "🔄 STARTING F1 - PART 1"
           sleep 10
-          echo "🚀 Deploying ${{ matrix.serverless }}"
+          echo "✅ F1 - PART 1 COMPLETED"
 
-      - name: Complete Message
+  process_f1_part2:
+    name: F1 - Part 2
+    runs-on: ubuntu-latest
+    needs: process_f1_part1  # Part 1 ke complete hone ka wait karega
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Process F1 Part 2
         run: |
-          echo "🎉 ${{ matrix.serverless }} processing completed!"
+          echo "🔄 STARTING F1 - PART 2"
+          sleep 10
+          echo "✅ F1 - PART 2 COMPLETED"
+
+  process_f1_part3:
+    name: F1 - Part 3
+    runs-on: ubuntu-latest
+    needs: process_f1_part2  # Part 2 ke complete hone ka wait karega
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Process F1 Part 3
+        run: |
+          echo "🔄 STARTING F1 - PART 3"
+          sleep 10
+          echo "✅ F1 - PART 3 COMPLETED"
+          echo "🎉 F1 COMPLETED ALL PARTS"
+
+  # F2 Processing - F1 complete hone ke baad start hoga
+  process_f2_part1:
+    name: F2 - Part 1
+    runs-on: ubuntu-latest
+    needs: process_f1_part3  # F1 complete hone ka wait karega
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Process F2 Part 1
+        run: |
+          echo "🔄 STARTING F2 - PART 1"
+          sleep 10
+          echo "✅ F2 - PART 1 COMPLETED"
+
+  process_f2_part2:
+    name: F2 - Part 2
+    runs-on: ubuntu-latest
+    needs: process_f2_part1
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Process F2 Part 2
+        run: |
+          echo "🔄 STARTING F2 - PART 2"
+          sleep 10
+          echo "✅ F2 - PART 2 COMPLETED"
+
+  process_f2_part3:
+    name: F2 - Part 3
+    runs-on: ubuntu-latest
+    needs: process_f2_part2
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Process F2 Part 3
+        run: |
+          echo "🔄 STARTING F2 - PART 3"
+          sleep 10
+          echo "✅ F2 - PART 3 COMPLETED"
+          echo "🎉 F2 COMPLETED ALL PARTS"
+
+  # F3 Processing - F2 complete hone ke baad start hoga
+  process_f3_part1:
+    name: F3 - Part 1
+    runs-on: ubuntu-latest
+    needs: process_f2_part3
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Process F3 Part 1
+        run: |
+          echo "🔄 STARTING F3 - PART 1"
+          sleep 10
+          echo "✅ F3 - PART 1 COMPLETED"
+
+  process_f3_part2:
+    name: F3 - Part 2
+    runs-on: ubuntu-latest
+    needs: process_f3_part1
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Process F3 Part 2
+        run: |
+          echo "🔄 STARTING F3 - PART 2"
+          sleep 10
+          echo "✅ F3 - PART 2 COMPLETED"
+
+  process_f3_part3:
+    name: F3 - Part 3
+    runs-on: ubuntu-latest
+    needs: process_f3_part2
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Process F3 Part 3
+        run: |
+          echo "🔄 STARTING F3 - PART 3"
+          sleep 10
+          echo "✅ F3 - PART 3 COMPLETED"
+          echo "🎉 F3 COMPLETED ALL PARTS"
+
+  # Final Completion
+  all_complete:
+    name: 🎉 All Processing Complete
+    runs-on: ubuntu-latest
+    needs: [process_f1_part3, process_f2_part3, process_f3_part3]
+    steps:
+      - name: All Branches Processed
+        run: |
+          echo "🎊 ALL BRANCHES PROCESSED SUCCESSFULLY!"
+          echo "✅ F1 → F2 → F3 COMPLETED SEQUENTIALLY"
+          echo "📊 Each branch: Part 1 → Part 2 → Part 3"
